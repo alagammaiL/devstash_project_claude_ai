@@ -17,3 +17,4 @@
 ## History
 
 <!--Keep this updated earliest to latest-->
+- 2026-11-18: Initialized the Next.js project with the App Router, TypeScript, Tailwind CSS, and npm. Set up the initial `devstash` app.
