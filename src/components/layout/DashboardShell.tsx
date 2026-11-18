@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   Code,
   ChevronDown,
@@ -226,7 +227,7 @@ function SidebarNavigation({ collapsed, onNavigate }: SidebarNavigationProps) {
   );
 }
 
-export default function DashboardShell() {
+export default function DashboardShell({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
@@ -322,9 +323,7 @@ export default function DashboardShell() {
           <SidebarNavigation collapsed={isCollapsed} />
         </aside>
 
-        <main className="p-6">
-          <h1 className="text-2xl font-semibold">Main</h1>
-        </main>
+        {children}
       </div>
     </div>
   );

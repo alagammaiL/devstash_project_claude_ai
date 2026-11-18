@@ -6,7 +6,7 @@
 
 <!-- Not started |in progress |completed-->
 
-Completed
+completed
 
 ## Goals
 
@@ -26,3 +26,5 @@ Completed
 - 2026-11-18: Added the DevStash DS brand mark with a green-to-blue gradient and display-only Add Item and Add Feature buttons above the sidebar/main split.
 - 2026-11-18: Started Dashboard UI Phase 2 according to `context/features/dashboard-phase-2-spec.md`.
 - 2026-11-18: Completed Dashboard UI Phase 2 with item-type navigation, a collapsible Favorites section, recent collections, a collapsible desktop sidebar, a mobile drawer, and the user avatar area.
+- 2026-11-18: Started Dashboard UI Phase 3 according to `context/features/dashboard-phase-3-spec.md`.
+- 2026-11-18: Completed Dashboard UI Phase 3 with dashboard statistics, collection cards, pinned items, and 10 recent mock items.
