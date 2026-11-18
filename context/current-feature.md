@@ -6,6 +6,8 @@
 
 <!-- Not started |in progress |completed-->
 
+Completed
+
 ## Goals
 
 <!--Goals and requirements-->
@@ -22,3 +24,5 @@
 - 2026-11-18: Started Dashboard UI Phase 1 according to `context/features/dashboard-phase-1-spec.md`.
 - 2026-11-18: Completed Dashboard UI Phase 1 with shadcn/ui setup, the `/dashboard` route, dark styling, and display-only top bar and placeholders.
 - 2026-11-18: Added the DevStash DS brand mark with a green-to-blue gradient and display-only Add Item and Add Feature buttons above the sidebar/main split.
+- 2026-11-18: Started Dashboard UI Phase 2 according to `context/features/dashboard-phase-2-spec.md`.
+- 2026-11-18: Completed Dashboard UI Phase 2 with item-type navigation, a collapsible Favorites section, recent collections, a collapsible desktop sidebar, a mobile drawer, and the user avatar area.
