@@ -1,6 +1,6 @@
 # Feature
 
-Dashboard collections backed by Neon PostgreSQL and Prisma, following `context/features/dashboard-collections-spec.md`.
+Dashboard items backed by Neon PostgreSQL and Prisma, following `context/features/dashboard-items-spec.md`.
 
 ## Status
 
@@ -10,18 +10,21 @@ completed
 
 ## Goals
 
-- Replace mock collection data in the dashboard's main area with data fetched from Neon through Prisma.
-- Add collection data-fetching functions in `src/lib/db/collections.ts` and call them from a Server Component.
-- Keep the existing six-card design, derive each card's border color from its most-used content type, and show icons for every type in that collection.
-- Store favorites on `Collection.isFavorite` and update collection statistics using database results.
-- Do not add item previews beneath the collection cards in this feature.
+- Replace dummy pinned and recent item data in the dashboard's main area with data fetched from Neon through Prisma.
+- Create `src/lib/db/items.ts` with database item-fetching functions and call them directly from a Server Component.
+- Preserve the existing item-card layout and styling, deriving item-card icons and borders from each item's type.
+- Display item type tags and the existing item-card details.
+- Update collection statistics with database-backed item results.
+- Hide the pinned-items section entirely when there are no pinned items.
 
 ## Notes
 
 - Preserve the current dashboard layout and styling; refer to `context/screenshots/dashboard-ui-main.png` if needed.
-- Follow `context/features/dashboard-collections-spec.md` for the feature requirements.
+- Follow `context/features/dashboard-items-spec.md` for the feature requirements.
+- Replace mock pinned and recent items in the dashboard's main area with Prisma-backed database items.
+- When no items are pinned, do not render the pinned-items section.
 - The `Collection.isFavorite` migration was applied to the development Neon database only; production was not migrated.
-- The dashboard's collection cards and collection/favorite counts are database-backed; sidebar collections and item statistics remain mock-backed.
+- The dashboard's collection cards, item cards, and dashboard item totals are database-backed; sidebar navigation and item-type counts remain mock-backed.
 - Dashboard rendering is dynamic so collection data is queried at request time rather than frozen during the production build.
 
 ## History
@@ -48,3 +51,6 @@ completed
 - 2026-11-25: Added persisted collection favorites and fetched database collections, content-type summaries, and favorite counts for the dashboard's main area.
 - 2026-11-25: Applied the `Collection.isFavorite` migration to development, regenerated Prisma Client, and reran the seed and database checks.
 - 2026-11-25: Completed the dashboard collections integration; database checks, lint, type-check, production build, and the live dashboard request all passed.
+- 2026-11-25: Started the dashboard items database integration according to `context/features/dashboard-items-spec.md`.
+- 2026-11-25: Replaced mock pinned and recent dashboard items with Prisma-backed records, including database item types, tags, favorites, and update times; the pinned section now stays hidden when empty.
+- 2026-11-25: Updated dashboard item and collection statistics to use database results; lint, type-check, production build, and development database checks passed.

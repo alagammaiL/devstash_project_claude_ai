@@ -12,8 +12,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { itemTypes, items } from "@/lib/mock-data";
 import { getDashboardCollections } from "@/lib/db/collections";
+import { getDashboardItems } from "@/lib/db/items";
 
 const itemTypeIcons: Record<string, LucideIcon> = {
   snippet: Code,
@@ -37,27 +37,29 @@ const itemTypeLabels: Record<string, string> = {
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 
-function formatDate(value: string) {
+function formatDate(value: Date) {
   return new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
-  }).format(new Date(value));
+  }).format(value);
 }
 
 function ItemTypeIcon({
-  typeId,
+  type,
   className,
 }: {
-  typeId: string;
+  type: {
+    id: string;
+    color: string;
+  };
   className: string;
 }) {
-  const Icon = itemTypeIcons[typeId] ?? File;
-  const color = itemTypes.find((itemType) => itemType.name === typeId)?.color;
+  const Icon = itemTypeIcons[type.id] ?? File;
 
   return (
     <span
       className={`grid shrink-0 place-items-center rounded-lg bg-muted ${className}`}
-      style={{ color }}
+      style={{ color: type.color }}
     >
       <Icon aria-hidden="true" className="size-5" />
     </span>
@@ -65,22 +67,14 @@ function ItemTypeIcon({
 }
 
 export default async function DashboardContent() {
-  const collections = await getDashboardCollections();
-  const favoriteItems = items.filter((item) => item.isFavorite);
+  const [collections, dashboardItems] = await Promise.all([
+    getDashboardCollections(),
+    getDashboardItems(),
+  ]);
+  const { pinnedItems, recentItems, totalItemCount, favoriteItemCount } =
+    dashboardItems;
   const favoriteCollections = collections.filter(
     (collection) => collection.isFavorite,
-  );
-  const pinnedItems = items.filter((item) => item.isPinned);
-  const recentItems = [...items]
-    .sort(
-      (first, second) =>
-        new Date(second.updatedAt).getTime() -
-        new Date(first.updatedAt).getTime(),
-    )
-    .slice(0, 10);
-  const totalItemCount = itemTypes.reduce(
-    (total, itemType) => total + itemType.count,
-    0,
   );
 
   const stats = [
@@ -100,7 +94,7 @@ export default async function DashboardContent() {
     },
     {
       label: "Favorite items",
-      value: favoriteItems.length,
+      value: favoriteItemCount,
       detail: "Items marked as favorites",
       Icon: Star,
       color: "#f59e0b",
@@ -216,32 +210,27 @@ export default async function DashboardContent() {
         </div>
       </section>
 
-      <section aria-labelledby="pinned-heading" className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Pin aria-hidden="true" className="size-4 text-muted-foreground" />
-          <h2
-            className="text-lg font-semibold tracking-tight"
-            id="pinned-heading"
-          >
-            Pinned items
-          </h2>
-        </div>
-        {pinnedItems.length > 0 ? (
+      {pinnedItems.length > 0 && (
+        <section aria-labelledby="pinned-heading" className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Pin aria-hidden="true" className="size-4 text-muted-foreground" />
+            <h2
+              className="text-lg font-semibold tracking-tight"
+              id="pinned-heading"
+            >
+              Pinned items
+            </h2>
+          </div>
           <div className="grid gap-3 lg:grid-cols-2">
             {pinnedItems.map((item) => (
               <article
                 className="flex min-w-0 gap-4 rounded-xl border border-border border-l-2 bg-card/60 p-4 sm:p-5"
                 key={item.id}
                 style={{
-                  borderLeftColor: itemTypes.find(
-                    (itemType) => itemType.name === item.typeId,
-                  )?.color,
+                  borderLeftColor: item.type.color,
                 }}
               >
-                <ItemTypeIcon
-                  className="size-11"
-                  typeId={item.typeId}
-                />
+                <ItemTypeIcon className="size-11" type={item.type} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="truncate font-medium">{item.title}</h3>
@@ -273,12 +262,8 @@ export default async function DashboardContent() {
               </article>
             ))}
           </div>
-        ) : (
-          <p className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-            Pin items to keep them close at hand.
-          </p>
-        )}
-      </section>
+        </section>
+      )}
 
       <section aria-labelledby="recent-heading" className="space-y-4">
         <div className="flex items-center justify-between gap-3">
@@ -299,10 +284,6 @@ export default async function DashboardContent() {
         </div>
         <div className="overflow-hidden rounded-xl border border-border bg-card/40">
           {recentItems.map((item, index) => {
-            const type = itemTypes.find(
-              (itemType) => itemType.name === item.typeId,
-            );
-
             return (
               <article
                 className={`flex min-w-0 flex-col gap-3 p-4 sm:flex-row sm:items-center ${
@@ -310,12 +291,12 @@ export default async function DashboardContent() {
                 }`}
                 key={item.id}
               >
-                <ItemTypeIcon className="size-10" typeId={item.typeId} />
+                <ItemTypeIcon className="size-10" type={item.type} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <h3 className="font-medium">{item.title}</h3>
                     <span className="text-xs text-muted-foreground">
-                      {itemTypeLabels[item.typeId] ?? type?.name ?? "Item"}
+                      {itemTypeLabels[item.type.id] ?? item.type.name}
                     </span>
                     {item.isPinned && (
                       <Pin
@@ -346,7 +327,7 @@ export default async function DashboardContent() {
                 </div>
                 <time
                   className="shrink-0 text-xs text-muted-foreground sm:pl-3"
-                  dateTime={item.updatedAt}
+                  dateTime={item.updatedAt.toISOString()}
                 >
                   {formatDate(item.updatedAt)}
                 </time>
