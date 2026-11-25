@@ -1,24 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevStash
+
+DevStash is a searchable hub for developer knowledge, built with Next.js, TypeScript, Prisma 7, and Neon PostgreSQL.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies and configure the database:
+
+```bash
+npm install
+```
+
+Create a development branch in Neon, copy `.env.example` to `.env` (or `.env.local`), and set:
+
+- `DATABASE_URL` to the pooled connection string for the development branch.
+- `DIRECT_URL` to the direct connection string for that same branch. Prisma uses this for migrations.
+
+Generate Prisma Client, create/apply the initial migration, then seed the system item types:
+
+```bash
+npm run db:generate
+npm run db:migrate -- --name init
+npm run db:seed
+npm run db:test
+```
+
+Always use migrations for schema changes. Do not use `prisma db push` unless explicitly requested. For production, create a separate Neon branch and run `npm run db:deploy` with that branch's direct connection string.
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
 
