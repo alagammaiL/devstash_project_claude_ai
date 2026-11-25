@@ -1,6 +1,6 @@
 # Feature
 
-Dashboard items backed by Neon PostgreSQL and Prisma, following `context/features/dashboard-items-spec.md`.
+Dashboard stats and sidebar powered by Neon PostgreSQL and Prisma, following `context/features/stats-sidebar-spec.md`.
 
 ## Status
 
@@ -10,21 +10,20 @@ completed
 
 ## Goals
 
-- Replace dummy pinned and recent item data in the dashboard's main area with data fetched from Neon through Prisma.
-- Create `src/lib/db/items.ts` with database item-fetching functions and call them directly from a Server Component.
-- Preserve the existing item-card layout and styling, deriving item-card icons and borders from each item's type.
-- Display item type tags and the existing item-card details.
-- Update collection statistics with database-backed item results.
-- Hide the pinned-items section entirely when there are no pinned items.
+- Replace mock-backed dashboard statistics with values from the database.
+- Display system item types in the sidebar with their icons and links to `/items/[typename]`.
+- Show actual database collections in the sidebar, retaining favorite stars and using the most-used item type's color for recent collection indicators.
+- Add a "View all collections" link below the collection list that navigates to `/collections`.
+- Use the database item functions in `src/lib/db/items.ts` for item-related statistics.
 
 ## Notes
 
 - Preserve the current dashboard layout and styling; refer to `context/screenshots/dashboard-ui-main.png` if needed.
-- Follow `context/features/dashboard-items-spec.md` for the feature requirements.
-- Replace mock pinned and recent items in the dashboard's main area with Prisma-backed database items.
-- When no items are pinned, do not render the pinned-items section.
+- Follow `context/features/stats-sidebar-spec.md` for the feature requirements.
+- The main dashboard item and collection cards already use Neon-backed Prisma data; `src/lib/db/items.ts` is available for database-backed statistics.
+- Sidebar system item types and their per-user counts come from Prisma; favorite and recent collections use database records and dominant item-type colors.
+- The main dashboard keeps its six-card collection layout while using full database collection totals for statistics.
 - The `Collection.isFavorite` migration was applied to the development Neon database only; production was not migrated.
-- The dashboard's collection cards, item cards, and dashboard item totals are database-backed; sidebar navigation and item-type counts remain mock-backed.
 - Dashboard rendering is dynamic so collection data is queried at request time rather than frozen during the production build.
 
 ## History
@@ -54,3 +53,6 @@ completed
 - 2026-11-25: Started the dashboard items database integration according to `context/features/dashboard-items-spec.md`.
 - 2026-11-25: Replaced mock pinned and recent dashboard items with Prisma-backed records, including database item types, tags, favorites, and update times; the pinned section now stays hidden when empty.
 - 2026-11-25: Updated dashboard item and collection statistics to use database results; lint, type-check, production build, and development database checks passed.
+- 2026-11-25: Started the dashboard stats and sidebar integration according to `context/features/stats-sidebar-spec.md`.
+- 2026-11-25: Connected sidebar item types, counts, and collections to Prisma; added the View all collections link and dominant-type color indicators for recent collections.
+- 2026-11-25: Updated dashboard statistics to use full database counts while preserving the six-card layout; lint, type-check, production build, and 36 development database checks passed.

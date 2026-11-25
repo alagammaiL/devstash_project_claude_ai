@@ -54,7 +54,15 @@ export interface DashboardItems {
   favoriteItemCount: number;
 }
 
-export async function getDashboardItems(): Promise<DashboardItems> {
+export interface DashboardItemType {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  count: number;
+}
+
+async function getDashboardUserId(): Promise<string> {
   const user = await prisma.user.findUnique({
     where: { email: DEMO_USER_EMAIL },
     select: { id: true },
@@ -66,21 +74,27 @@ export async function getDashboardItems(): Promise<DashboardItems> {
     );
   }
 
+  return user.id;
+}
+
+export async function getDashboardItems(): Promise<DashboardItems> {
+  const userId = await getDashboardUserId();
+
   const [pinnedItems, recentItems, totalItemCount, favoriteItemCount] =
     await Promise.all([
       prisma.item.findMany({
-        where: { userId: user.id, isPinned: true },
+        where: { userId, isPinned: true },
         select: dashboardItemSelect,
         orderBy: { updatedAt: "desc" },
       }),
       prisma.item.findMany({
-        where: { userId: user.id },
+        where: { userId },
         select: dashboardItemSelect,
         orderBy: { updatedAt: "desc" },
         take: RECENT_ITEM_LIMIT,
       }),
-      prisma.item.count({ where: { userId: user.id } }),
-      prisma.item.count({ where: { userId: user.id, isFavorite: true } }),
+      prisma.item.count({ where: { userId } }),
+      prisma.item.count({ where: { userId, isFavorite: true } }),
     ]);
 
   const mapItems = (items: typeof pinnedItems): DashboardItem[] =>
@@ -101,4 +115,33 @@ export async function getDashboardItems(): Promise<DashboardItems> {
     totalItemCount,
     favoriteItemCount,
   };
+}
+
+export async function getDashboardItemTypes(): Promise<DashboardItemType[]> {
+  const userId = await getDashboardUserId();
+  const [itemTypes, itemCounts] = await Promise.all([
+    prisma.itemType.findMany({
+      where: { isSystem: true },
+      select: {
+        id: true,
+        name: true,
+        icon: true,
+        color: true,
+      },
+      orderBy: { name: "asc" },
+    }),
+    prisma.item.groupBy({
+      by: ["typeId"],
+      where: { userId },
+      _count: { _all: true },
+    }),
+  ]);
+  const countByTypeId = new Map(
+    itemCounts.map(({ typeId, _count }) => [typeId, _count._all]),
+  );
+
+  return itemTypes.map((itemType) => ({
+    ...itemType,
+    count: countByTypeId.get(itemType.id) ?? 0,
+  }));
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import {
+  ArrowRight,
   Code,
   ChevronDown,
   File,
@@ -21,6 +22,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import type { DashboardCollection } from "@/lib/db/collections";
+import type { DashboardItemType } from "@/lib/db/items";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,7 +33,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { collections, itemTypes, user } from "@/lib/mock-data";
+import { user } from "@/lib/mock-data";
 
 const itemTypeIcons: Record<string, LucideIcon> = {
   snippet: Code,
@@ -52,17 +55,27 @@ const itemTypeLabels: Record<string, string> = {
   link: "Links",
 };
 
+const itemTypeOrder = new Map(
+  ["command", "prompt", "snippet", "note", "link", "file", "image"].map(
+    (id, index) => [id, index],
+  ),
+);
+
 type SidebarNavigationProps = {
   collapsed: boolean;
+  collections: DashboardCollection[];
+  itemTypes: DashboardItemType[];
   onNavigate?: () => void;
 };
 
 function CollectionRow({
   collection,
   collapsed,
+  isRecent,
 }: {
-  collection: (typeof collections)[number];
+  collection: DashboardCollection;
   collapsed: boolean;
+  isRecent: boolean;
 }) {
   return (
     <div
@@ -71,11 +84,19 @@ function CollectionRow({
       }`}
       title={collapsed ? collection.name : undefined}
     >
-      <Folder
-        aria-hidden="true"
-        className="size-4 shrink-0"
-        style={{ color: collection.color }}
-      />
+      {isRecent ? (
+        <span
+          aria-hidden="true"
+          className="size-2.5 shrink-0 rounded-full"
+          style={{ backgroundColor: collection.color }}
+        />
+      ) : (
+        <Folder
+          aria-hidden="true"
+          className="size-4 shrink-0"
+          style={{ color: collection.color }}
+        />
+      )}
       {!collapsed && (
         <>
           <span className="min-w-0 flex-1 truncate">{collection.name}</span>
@@ -93,12 +114,23 @@ function CollectionRow({
   );
 }
 
-function SidebarNavigation({ collapsed, onNavigate }: SidebarNavigationProps) {
+function SidebarNavigation({
+  collapsed,
+  collections,
+  itemTypes,
+  onNavigate,
+}: SidebarNavigationProps) {
   const [isFavoritesCollapsed, setIsFavoritesCollapsed] = useState(false);
   const favoriteCollections = collections.filter(
     (collection) => collection.isFavorite,
   );
   const recentCollections = collections.slice(0, 3);
+  const orderedItemTypes = [...itemTypes].sort(
+    (first, second) =>
+      (itemTypeOrder.get(first.id) ?? itemTypeOrder.size) -
+        (itemTypeOrder.get(second.id) ?? itemTypeOrder.size) ||
+      first.name.localeCompare(second.name),
+  );
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
@@ -108,9 +140,9 @@ function SidebarNavigation({ collapsed, onNavigate }: SidebarNavigationProps) {
             Types
           </h2>
         )}
-        {itemTypes.map((itemType) => {
-          const Icon = itemTypeIcons[itemType.name];
-          const label = itemTypeLabels[itemType.name];
+        {orderedItemTypes.map((itemType) => {
+          const Icon = itemTypeIcons[itemType.id] ?? File;
+          const label = itemTypeLabels[itemType.id] ?? itemType.name;
 
           return (
             <Link
@@ -118,7 +150,7 @@ function SidebarNavigation({ collapsed, onNavigate }: SidebarNavigationProps) {
               className={`flex h-10 items-center gap-3 rounded-md px-3 text-sm text-foreground transition-colors hover:bg-muted ${
                 collapsed ? "justify-center px-0" : ""
               }`}
-              href={`/items/${itemType.name}s`}
+              href={`/items/${itemType.id}`}
               key={itemType.id}
               onClick={onNavigate}
               title={collapsed ? label : undefined}
@@ -166,6 +198,7 @@ function SidebarNavigation({ collapsed, onNavigate }: SidebarNavigationProps) {
             <CollectionRow
               collapsed={collapsed}
               collection={collection}
+              isRecent={false}
               key={collection.id}
             />
           ))}
@@ -184,10 +217,26 @@ function SidebarNavigation({ collapsed, onNavigate }: SidebarNavigationProps) {
           <CollectionRow
             collapsed={collapsed}
             collection={collection}
+            isRecent={true}
             key={collection.id}
           />
         ))}
       </section>
+
+      <div className="px-3 pb-4">
+        <Link
+          aria-label={collapsed ? "View all collections" : undefined}
+          className={`flex h-9 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-muted ${
+            collapsed ? "justify-center px-0" : ""
+          }`}
+          href="/collections"
+          onClick={onNavigate}
+          title={collapsed ? "View all collections" : undefined}
+        >
+          <ArrowRight aria-hidden="true" className="size-4 shrink-0" />
+          {!collapsed && <span>View all collections</span>}
+        </Link>
+      </div>
 
       <div
         className={`mt-auto border-t border-border p-4 ${
@@ -227,7 +276,15 @@ function SidebarNavigation({ collapsed, onNavigate }: SidebarNavigationProps) {
   );
 }
 
-export default function DashboardShell({ children }: { children: ReactNode }) {
+export default function DashboardShell({
+  children,
+  collections,
+  itemTypes,
+}: {
+  children: ReactNode;
+  collections: DashboardCollection[];
+  itemTypes: DashboardItemType[];
+}) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
@@ -254,6 +311,8 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
               </SheetHeader>
               <SidebarNavigation
                 collapsed={false}
+                collections={collections}
+                itemTypes={itemTypes}
                 onNavigate={() => setIsMobileDrawerOpen(false)}
               />
             </SheetContent>
@@ -320,7 +379,11 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
               )}
             </Button>
           </div>
-          <SidebarNavigation collapsed={isCollapsed} />
+          <SidebarNavigation
+            collapsed={isCollapsed}
+            collections={collections}
+            itemTypes={itemTypes}
+          />
         </aside>
 
         {children}

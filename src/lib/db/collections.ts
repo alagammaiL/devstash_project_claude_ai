@@ -3,7 +3,6 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 
 const DEMO_USER_EMAIL = "demo@devstash.io";
-const COLLECTION_LIMIT = 6;
 const DEFAULT_COLLECTION_COLOR = "#6b7280";
 
 interface CollectionItemType {
@@ -106,7 +105,6 @@ export async function getDashboardCollections(): Promise<
         second.latestActivity - first.latestActivity ||
         first.name.localeCompare(second.name),
     )
-    .slice(0, COLLECTION_LIMIT)
     .map((collection) => ({
       id: collection.id,
       name: collection.name,

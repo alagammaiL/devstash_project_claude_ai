@@ -12,8 +12,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { getDashboardCollections } from "@/lib/db/collections";
+import type { DashboardCollection } from "@/lib/db/collections";
 import { getDashboardItems } from "@/lib/db/items";
+
+const COLLECTION_CARD_LIMIT = 6;
 
 const itemTypeIcons: Record<string, LucideIcon> = {
   snippet: Code,
@@ -66,16 +68,18 @@ function ItemTypeIcon({
   );
 }
 
-export default async function DashboardContent() {
-  const [collections, dashboardItems] = await Promise.all([
-    getDashboardCollections(),
-    getDashboardItems(),
-  ]);
+export default async function DashboardContent({
+  collections,
+}: {
+  collections: DashboardCollection[];
+}) {
+  const dashboardItems = await getDashboardItems();
   const { pinnedItems, recentItems, totalItemCount, favoriteItemCount } =
     dashboardItems;
   const favoriteCollections = collections.filter(
     (collection) => collection.isFavorite,
   );
+  const collectionCards = collections.slice(0, COLLECTION_CARD_LIMIT);
 
   const stats = [
     {
@@ -165,7 +169,7 @@ export default async function DashboardContent() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
-          {collections.map((collection) => (
+          {collectionCards.map((collection) => (
             <article
               className="min-w-0 rounded-xl border border-border border-l-2 bg-card/60 p-4 transition-colors hover:bg-accent/40 sm:p-5"
               key={collection.id}
