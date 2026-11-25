@@ -55,14 +55,16 @@ Other UI icons: `Search`, `Plus`, `Star` (favourite), `Pin`, `FolderOpen` (colle
 
 ### User
 
-| Field     | Type          | Notes         |
-| --------- | ------------- | ------------- |
-| id        | String (cuid) | PK            |
-| name      | String?       |               |
-| email     | String        | unique        |
-| image     | String?       | avatar        |
-| isPro     | Boolean       | default false |
-| createdAt | DateTime      |               |
+| Field         | Type          | Notes                                   |
+| ------------- | ------------- | --------------------------------------- |
+| id            | String (cuid) | PK                                      |
+| name          | String?       |                                         |
+| email         | String        | unique                                  |
+| passwordHash  | String?       | BCrypt hash for password-based sign-in |
+| emailVerified | DateTime?     | Email verification timestamp           |
+| image         | String?       | avatar                                  |
+| isPro         | Boolean       | default false                           |
+| createdAt     | DateTime      |                                         |
 
 ### Item
 

@@ -15,7 +15,7 @@ Create a development branch in Neon, copy `.env.example` to `.env` (or `.env.loc
 - `DATABASE_URL` to the pooled connection string for the development branch.
 - `DIRECT_URL` to the direct connection string for that same branch. Prisma uses this for migrations.
 
-Generate Prisma Client, create/apply the initial migration, then seed the system item types:
+Generate Prisma Client, create/apply migrations, seed development demo data, and verify the connection and seeded records:
 
 ```bash
 npm run db:generate
@@ -23,6 +23,8 @@ npm run db:migrate -- --name init
 npm run db:seed
 npm run db:test
 ```
+
+The seed command creates the development demo user and sample collections/items described in `context/features/seed-spec.md`. It refuses to run when `NODE_ENV` is `production`.
 
 Always use migrations for schema changes. Do not use `prisma db push` unless explicitly requested. For production, create a separate Neon branch and run `npm run db:deploy` with that branch's direct connection string.
 
