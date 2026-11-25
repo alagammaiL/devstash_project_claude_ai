@@ -24,26 +24,31 @@ const collections = [
     id: "react-patterns",
     name: "React Patterns",
     description: "Reusable React patterns and hooks",
+    isFavorite: true,
   },
   {
     id: "ai-workflows",
     name: "AI Workflows",
     description: "AI prompts and workflow automations",
+    isFavorite: false,
   },
   {
     id: "devops",
     name: "DevOps",
     description: "Infrastructure and deployment resources",
+    isFavorite: false,
   },
   {
     id: "terminal-commands",
     name: "Terminal Commands",
     description: "Useful shell commands for everyday development",
+    isFavorite: true,
   },
   {
     id: "design-resources",
     name: "Design Resources",
     description: "UI/UX resources and references",
+    isFavorite: false,
   },
 ] as const;
 
@@ -402,6 +407,7 @@ async function main() {
         update: {
           name: collection.name,
           description: collection.description,
+          isFavorite: collection.isFavorite,
           userId: user.id,
         },
         create: { ...collection, userId: user.id },

@@ -95,12 +95,13 @@ Other UI icons: `Search`, `Plus`, `Star` (favourite), `Pin`, `FolderOpen` (colle
 
 ### Collection
 
-| Field       | Type    | Notes     |
-| ----------- | ------- | --------- |
-| id          | String  | PK        |
-| name        | String  |           |
-| description | String? |           |
-| userId      | String  | FK → User |
+| Field       | Type    | Notes         |
+| ----------- | ------- | ------------- |
+| id          | String  | PK            |
+| name        | String  |               |
+| description | String? |               |
+| isFavorite  | Boolean | default false |
+| userId      | String  | FK → User     |
 
 ### Tag
 

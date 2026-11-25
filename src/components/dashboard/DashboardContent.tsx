@@ -12,7 +12,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { collections, itemTypes, items } from "@/lib/mock-data";
+import { itemTypes, items } from "@/lib/mock-data";
+import { getDashboardCollections } from "@/lib/db/collections";
 
 const itemTypeIcons: Record<string, LucideIcon> = {
   snippet: Code,
@@ -63,7 +64,8 @@ function ItemTypeIcon({
   );
 }
 
-export default function DashboardContent() {
+export default async function DashboardContent() {
+  const collections = await getDashboardCollections();
   const favoriteItems = items.filter((item) => item.isFavorite);
   const favoriteCollections = collections.filter(
     (collection) => collection.isFavorite,
@@ -196,18 +198,15 @@ export default function DashboardContent() {
                 aria-label="Collection item types"
                 className="mt-3 flex items-center gap-2"
               >
-                {collection.itemTypeIds.map((typeId) => {
-                  const Icon = itemTypeIcons[typeId] ?? File;
-                  const type = itemTypes.find(
-                    (itemType) => itemType.name === typeId,
-                  );
+                {collection.itemTypes.map((type) => {
+                  const Icon = itemTypeIcons[type.id] ?? File;
 
                   return (
                     <Icon
-                      aria-label={type?.name ?? typeId}
+                      aria-label={type.name}
                       className="size-4"
-                      key={typeId}
-                      style={{ color: type?.color }}
+                      key={type.id}
+                      style={{ color: type.color }}
                     />
                   );
                 })}

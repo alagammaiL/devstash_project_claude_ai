@@ -1,6 +1,6 @@
 # Feature
 
-Development demo data seeding based on `context/features/seed-spec.md`.
+Dashboard collections backed by Neon PostgreSQL and Prisma, following `context/features/dashboard-collections-spec.md`.
 
 ## Status
 
@@ -10,19 +10,19 @@ completed
 
 ## Goals
 
-- Upsert the demo user and hash the development password with bcryptjs using 12 rounds.
-- Seed the seven system item types with the icons and colors in `context/features/seed-spec.md`.
-- Seed the five specified collections and their sample snippets, prompts, commands, links, tags, and relations.
-- Add a read-only check that fetches and verifies the database connection, demo user, item types, collections, sample items, URLs, tags, and relations.
-- Keep seeding repeatable and prevent demo data from being seeded in production.
+- Replace mock collection data in the dashboard's main area with data fetched from Neon through Prisma.
+- Add collection data-fetching functions in `src/lib/db/collections.ts` and call them from a Server Component.
+- Keep the existing six-card design, derive each card's border color from its most-used content type, and show icons for every type in that collection.
+- Store favorites on `Collection.isFavorite` and update collection statistics using database results.
+- Do not add item previews beneath the collection cards in this feature.
 
 ## Notes
 
-- The demo user's password is stored as a bcrypt hash using 12 rounds.
-- Seeding is idempotent and blocked when `NODE_ENV` is `production`.
-- The password-hash migration is applied to the development database and the seed has run successfully.
-- `scripts/test-db.ts` verifies the stored seed data and its relationships without modifying the database.
-- Follow `context/features/seed-spec.md` for the complete seed data requirements.
+- Preserve the current dashboard layout and styling; refer to `context/screenshots/dashboard-ui-main.png` if needed.
+- Follow `context/features/dashboard-collections-spec.md` for the feature requirements.
+- The `Collection.isFavorite` migration was applied to the development Neon database only; production was not migrated.
+- The dashboard's collection cards and collection/favorite counts are database-backed; sidebar collections and item statistics remain mock-backed.
+- Dashboard rendering is dynamic so collection data is queried at request time rather than frozen during the production build.
 
 ## History
 
@@ -44,3 +44,7 @@ completed
 - 2026-11-25: Applied the password-hash migration to development and successfully ran the seed script.
 - 2026-11-25: Expanded the database test script to fetch and validate the demo account, system item types, collections, sample items, HTTPS links, and ownership relations.
 - 2026-11-25: Completed the development demo data feature with idempotent seed data and read-only database verification.
+- 2026-11-25: Started the dashboard collections database integration according to `context/features/dashboard-collections-spec.md`.
+- 2026-11-25: Added persisted collection favorites and fetched database collections, content-type summaries, and favorite counts for the dashboard's main area.
+- 2026-11-25: Applied the `Collection.isFavorite` migration to development, regenerated Prisma Client, and reran the seed and database checks.
+- 2026-11-25: Completed the dashboard collections integration; database checks, lint, type-check, production build, and the live dashboard request all passed.
