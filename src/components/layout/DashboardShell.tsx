@@ -26,6 +26,7 @@ import type { DashboardCollection } from "@/lib/db/collections";
 import type { DashboardItemType } from "@/lib/db/items";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ProBadge } from "@/components/ui/pro-badge";
 import {
   Sheet,
   SheetContent,
@@ -163,6 +164,9 @@ function SidebarNavigation({
               {!collapsed && (
                 <>
                   <span className="min-w-0 flex-1">{label}</span>
+                  {(itemType.id === "file" || itemType.id === "image") && (
+                    <ProBadge />
+                  )}
                   <span className="text-xs text-muted-foreground">
                     {itemType.count}
                   </span>

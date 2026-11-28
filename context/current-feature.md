@@ -1,30 +1,22 @@
-# Feature
-
-Dashboard stats and sidebar powered by Neon PostgreSQL and Prisma, following `context/features/stats-sidebar-spec.md`.
+# Current Feature: Add Pro Side Badge
 
 ## Status
 
-<!-- Not started |in progress |completed-->
-
-completed
+Complete
 
 ## Goals
 
-- Replace mock-backed dashboard statistics with values from the database.
-- Display system item types in the sidebar with their icons and links to `/items/[typename]`.
-- Show actual database collections in the sidebar, retaining favorite stars and using the most-used item type's color for recent collection indicators.
-- Add a "View all collections" link below the collection list that navigates to `/collections`.
-- Use the database item functions in `src/lib/db/items.ts` for item-related statistics.
+- Add a reusable shadcn/ui Pro badge component for the sidebar.
+- Display the badge next to the Files and Images item names.
+- Make the badge responsive across screen sizes.
+- Show a "Pro Feature" tooltip on hover.
+- Keep the badge clean and visually distinct.
 
 ## Notes
 
-- Preserve the current dashboard layout and styling; refer to `context/screenshots/dashboard-ui-main.png` if needed.
-- Follow `context/features/stats-sidebar-spec.md` for the feature requirements.
-- The main dashboard item and collection cards already use Neon-backed Prisma data; `src/lib/db/items.ts` is available for database-backed statistics.
-- Sidebar system item types and their per-user counts come from Prisma; favorite and recent collections use database records and dominant item-type colors.
-- The main dashboard keeps its six-card collection layout while using full database collection totals for statistics.
-- The `Collection.isFavorite` migration was applied to the development Neon database only; production was not migrated.
-- Dashboard rendering is dynamic so collection data is queried at request time rather than frozen during the production build.
+- Loaded from `context/features/pro-side-badge-spec.md`.
+- The badge indicates access to pro features for File and Image item types.
+- Placement: next to the item name in the sidebar.
 
 ## History
 
@@ -56,3 +48,5 @@ completed
 - 2026-11-25: Started the dashboard stats and sidebar integration according to `context/features/stats-sidebar-spec.md`.
 - 2026-11-25: Connected sidebar item types, counts, and collections to Prisma; added the View all collections link and dominant-type color indicators for recent collections.
 - 2026-11-25: Updated dashboard statistics to use full database counts while preserving the six-card layout; lint, type-check, production build, and 36 development database checks passed.
+- 2026-11-28: Started the Pro side badge feature according to `context/features/pro-side-badge-spec.md`.
+- 2026-11-28: Completed the Pro side badge feature with reusable shadcn badge and tooltip components for the Files and Images sidebar item types.
