@@ -1,22 +1,16 @@
-# Current Feature: Add Pro Side Badge
+# Current Feature
 
 ## Status
 
-Complete
+Not Started
 
 ## Goals
 
-- Add a reusable shadcn/ui Pro badge component for the sidebar.
-- Display the badge next to the Files and Images item names.
-- Make the badge responsive across screen sizes.
-- Show a "Pro Feature" tooltip on hover.
-- Keep the badge clean and visually distinct.
+<!--List the goals as bullets-->
 
 ## Notes
 
-- Loaded from `context/features/pro-side-badge-spec.md`.
-- The badge indicates access to pro features for File and Image item types.
-- Placement: next to the item name in the sidebar.
+<!--Add relevant notes/context-->
 
 ## History
 
